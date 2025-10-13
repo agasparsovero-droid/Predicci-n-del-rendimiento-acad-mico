@@ -1,0 +1,1 @@
+promedio = st.number_input("Promedio de notas", min_value=0.0, max_value=20.0)
