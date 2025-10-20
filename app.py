@@ -1,9 +1,13 @@
 import streamlit as st
 import tensorflow as tf
 import numpy as np
-import pandas as pd
 
-# --- Cargar el modelo entrenado ---
+st.set_page_config(page_title="Predicción Académica", page_icon="🎓", layout="centered")
+
+st.title("🎓 Predicción del Rendimiento Académico")
+st.write("Introduce los datos del estudiante para estimar su posible rendimiento académico.")
+
+# --- Cargar modelo ---
 @st.cache_resource
 def cargar_modelo():
     modelo = tf.keras.models.load_model("modelo_rendimiento.h5")
@@ -11,22 +15,19 @@ def cargar_modelo():
 
 modelo = cargar_modelo()
 
-st.title("🎓 Predicción del Rendimiento Académico")
-st.write("Introduce los datos del estudiante para estimar su rendimiento.")
-
 # --- Entradas del usuario ---
 nivel = st.selectbox("Nivel educativo", ["Primaria", "Secundaria"])
 situacion = st.selectbox("Situación socioeconómica", ["Baja", "Media baja", "Media", "Media alta", "Alta"])
 motivacion = st.selectbox("Nivel de motivación", ["Muy baja", "Baja", "Media", "Alta", "Muy alta"])
 responsabilidad = st.selectbox("Responsabilidad", ["Baja", "Media", "Alta", "Muy alta"])
 
-# Mapear variables igual que en tu Colab
+# Mapeos
 nivel_map = {"primaria": 0, "secundaria": 1}
 situ_map = {"baja": 1, "media baja": 2, "media": 3, "media alta": 4, "alta": 5}
 motiv_map = {"muy baja": 1, "baja": 2, "media": 3, "alta": 4, "muy alta": 5}
 resp_map = {"baja": 1, "media": 2, "alta": 3, "muy alta": 4}
 
-# Convertir a formato numérico
+# Preparar datos
 x_input = np.array([[ 
     nivel_map[nivel.lower()],
     situ_map[situacion.lower()],
@@ -34,7 +35,7 @@ x_input = np.array([[
     resp_map[responsabilidad.lower()]
 ]])
 
-# Botón para predecir
+# Botón
 if st.button("🔍 Predecir rendimiento"):
     pred = modelo.predict(x_input)
     pred_value = float(pred[0][0])
